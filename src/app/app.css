@@ -1,0 +1,34 @@
+/* Espacio para evitar que el contenido se oculte detrás del status-bar */
+app {
+    display: block;
+    min-height: 100vh;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Contenido principal con espacio para banner y status-bar */
+.main-content {
+    padding: 20px 20px 100px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: calc(100vh - 120px);
+    background-color: red;
+}
+
+/* Banner de actualización */
+.update-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/* Status-bar */
+.status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+}

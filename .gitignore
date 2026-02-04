@@ -11,6 +11,17 @@
 npm-debug.log
 yarn-error.log
 
+# Dependencies lock files
+/package-lock.json
+/yarn.lock
+/pnpm-lock.yaml
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+
 # IDEs and editors
 .idea/
 .project
@@ -29,6 +40,31 @@ yarn-error.log
 !.vscode/mcp.json
 .history/*
 
+# Build and deployment
+/.angular/
+/.nx/cache
+/build/
+.next/
+.vercel/
+
+# Testing and coverage
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# PWA specific files
+/ngsw-worker.js
+/ngsw-manifest.json
+/safety-worker.js
+/worker-basic.js
+
+# Logs and temporary files
+*.log
+logs/
+*.pid
+*.seed
+*.pid.lock
+
 # Miscellaneous
 /.angular/cache
 .sass-cache/
@@ -42,3 +78,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+*~

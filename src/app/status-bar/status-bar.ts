@@ -1,5 +1,6 @@
-import { Component, inject, signal, DestroyRef } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NetworkService } from '../services/network.service';
 
 @Component({
   selector: 'pwa-status-bar',
@@ -26,30 +27,17 @@ import { CommonModule } from '@angular/common';
   styleUrl: './status-bar.css',
 })
 export class StatusBar {
-  private destroyRef = inject(DestroyRef);
+  private readonly networkService = inject(NetworkService);
 
-  readonly isOnline = signal(navigator.onLine);
-  readonly lastUpdate = signal<Date | null>(new Date());
+  readonly isOnline = computed(() => this.networkService.isOnline());
+  readonly lastUpdate = signal<Date | null>(null);
 
   constructor() {
-    this.setupConnectionListeners();
-  }
-
-  private setupConnectionListeners(): void {
-    const updateOnlineStatus = () => {
-      this.isOnline.set(navigator.onLine);
-      if (navigator.onLine) {
+    effect(() => {
+      // Actualizar lastUpdate cuando volvemos online
+      if (this.networkService.isOnline()) {
         this.lastUpdate.set(new Date());
       }
-    };
-
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-
-    // Limpiar listeners cuando se destruya el componente
-    this.destroyRef.onDestroy(() => {
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
     });
   }
 }

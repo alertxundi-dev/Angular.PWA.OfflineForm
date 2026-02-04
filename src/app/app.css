@@ -1,34 +1,196 @@
-/* Espacio para evitar que el contenido se oculte detrás del status-bar */
-app {
-    display: block;
+/* App Container - Modern PWA Design */
+.app-container {
     min-height: 100vh;
-    box-sizing: border-box;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     position: relative;
+    overflow-x: hidden;
 }
 
-/* Contenido principal con espacio para banner y status-bar */
-.main-content {
-    padding: 20px 20px 100px 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-    min-height: calc(100vh - 120px);
-    background-color: red;
-}
-
-/* Banner de actualización */
-.update-banner {
-    position: fixed;
+/* Header - Minimalist Design */
+.app-header {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    position: sticky;
     top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
+    z-index: 100;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
-/* Status-bar */
-.status-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.brand-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #1a202c;
+    margin: 0;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-subtitle {
+    font-size: 0.875rem;
+    color: #718096;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Main Container - Grid Layout */
+.main-container {
+    padding: 3rem 2rem;
+    padding-bottom: 6rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.content-grid {
+    max-width: 1400px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.form-column,
+.data-column {
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
+    width: 100%;
+}
+
+/* Responsive Design */
+@media (min-width: 1200px) {
+    .content-grid {
+        gap: 4rem;
+    }
+
+    .main-container {
+        padding: 4rem 2rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+        max-width: 900px;
+        gap: 2rem;
+    }
+
+    .form-column,
+    .data-column {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .brand-title {
+        font-size: 1.5rem;
+    }
+
+    .main-container {
+        padding: 2rem 1.5rem;
+        padding-bottom: 5rem;
+    }
+
+    .content-grid {
+        gap: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        padding: 1rem;
+    }
+
+    .brand-title {
+        font-size: 1.25rem;
+    }
+
+    .brand-subtitle {
+        font-size: 0.75rem;
+    }
+
+    .main-container {
+        padding: 1.5rem 1rem;
+        padding-bottom: 4rem;
+    }
+
+    .content-grid {
+        gap: 1rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .app-container {
+        background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    }
+
+    .app-header {
+        background: rgba(26, 32, 44, 0.95);
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .brand-title {
+        background: linear-gradient(135deg, #9f7aea 0%, #b794f4 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .brand-subtitle {
+        color: #a0aec0;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    .app-header {
+        position: static;
+    }
+}
+
+/* Print styles */
+@media print {
+
+    .app-header,
+    pwa-status-bar,
+    pwa-update-notification,
+    pwa-language-selector {
+        display: none;
+    }
+
+    .main-container {
+        padding: 0;
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
 }

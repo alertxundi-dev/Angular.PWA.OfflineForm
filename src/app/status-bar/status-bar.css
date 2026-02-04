@@ -1,88 +1,151 @@
+/* Status Bar Component Styles */
 .status-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 0.75rem 1rem;
+    padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.875rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-normal);
     z-index: 999;
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--neutral-200);
+    box-shadow: 0 -4px 6px -1px rgb(0 0 0 / 0.1), 0 -2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .status-bar.online {
-    border-top-color: rgba(34, 197, 94, 0.3);
-    color: #16a34a;
-    background-color: rgba(34, 197, 94, 0.1);
+    border-top-color: var(--success-300);
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.05), rgba(255, 255, 255, 0.95));
+    color: var(--success-700);
 }
 
 .status-bar.offline {
-    border-top-color: rgba(239, 68, 68, 0.3);
-    color: #dc2626;
-    background-color: rgba(239, 68, 68, 0.1);
+    border-top-color: var(--error-300);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(255, 255, 255, 0.95));
+    color: var(--error-700);
 }
 
 .status-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: var(--spacing-sm);
     max-width: 1200px;
     margin: 0 auto;
+    font-weight: 500;
 }
 
 .status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-full);
     animation: pulse 2s infinite;
+    flex-shrink: 0;
 }
 
 .status-bar.online .status-indicator {
-    background: #22c55e;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+    background: var(--success-500);
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
 }
 
 .status-bar.offline .status-indicator {
-    background: #ef4444;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    background: var(--error-500);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
 }
 
 .status-text {
-    font-weight: 500;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.status-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.8;
 }
 
 .last-update {
     font-size: 0.75rem;
     opacity: 0.7;
-    margin-left: 1rem;
+    margin-left: var(--spacing-md);
+    color: var(--neutral-600);
+    font-weight: 400;
 }
 
+/* Enhanced animations */
 @keyframes pulse {
-    0% {
+
+    0%,
+    100% {
         opacity: 1;
+        transform: scale(1);
     }
 
     50% {
-        opacity: 0.5;
-    }
-
-    100% {
-        opacity: 1;
+        opacity: 0.6;
+        transform: scale(1.1);
     }
 }
 
+/* Hover effects */
+.status-bar:hover {
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.status-bar.online:hover {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(255, 255, 255, 0.98));
+}
+
+.status-bar.offline:hover {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(255, 255, 255, 0.98));
+}
+
+/* Mobile responsive */
 @media (max-width: 768px) {
     .status-content {
         flex-direction: column;
-        gap: 0.25rem;
+        gap: var(--spacing-xs);
         text-align: center;
+        padding: var(--spacing-xs) 0;
     }
 
     .last-update {
         margin-left: 0;
         font-size: 0.7rem;
+        order: 2;
+    }
+
+    .status-text {
+        order: 1;
+    }
+
+    .status-bar {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .status-bar {
+        background: rgba(30, 41, 59, 0.95);
+        border-top-color: var(--neutral-700);
+        color: var(--neutral-200);
+    }
+
+    .status-bar.online {
+        background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(30, 41, 59, 0.95));
+        color: var(--success-400);
+    }
+
+    .status-bar.offline {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(30, 41, 59, 0.95));
+        color: var(--error-400);
+    }
+
+    .last-update {
+        color: var(--neutral-400);
     }
 }

@@ -1,0 +1,57 @@
+{
+    "APP": {
+        "TITLE": "PWA Formulário Offline",
+        "SUBTITLE": "Formulário com modo offline",
+        "LANGUAGES": {
+            "ES": "Espanhol",
+            "EN": "Inglês",
+            "PT": "Português"
+        }
+    },
+    "connection": {
+        "connected": "Conectado",
+        "offline": "Modo offline"
+    },
+    "form": {
+        "fields": {
+            "name": "Nome",
+            "lastname": "Sobrenome",
+            "email": "Email",
+            "category": "Categoria",
+            "observations": "Observações"
+        },
+        "placeholders": {
+            "selectCategory": "Selecione uma categoria"
+        },
+        "categories": {
+            "general": "Geral",
+            "support": "Suporte",
+            "sales": "Vendas",
+            "feedback": "Feedback"
+        },
+        "errors": {
+            "nameRequired": "O nome é obrigatório",
+            "lastnameRequired": "O sobrenome é obrigatório",
+            "emailInvalid": "Email inválido",
+            "categoryRequired": "A categoria é obrigatória"
+        },
+        "actions": {
+            "submit": "Enviar",
+            "submitting": "Enviando"
+        },
+        "success": "Formulário enviado com sucesso!"
+    },
+    "pendingForms": "Formulários pendentes ({{count}})",
+    "loading": "Carregando...",
+    "OFFLINE": {
+        "TITLE": "Formulários Pendentes de Sincronização",
+        "SUBTITLE": "Estes formulários foram salvos localmente. Você pode enviá-los manualmente quando tiver conexão.",
+        "LOADING": "Carregando formulários pendentes...",
+        "EMPTY": "Não há formulários pendentes para sincronizar",
+        "SAVED_ON": "Salvo em",
+        "OBSERVATIONS_LABEL": "Observações:",
+        "SEND_NOW": "Enviar Agora",
+        "DELETE": "Excluir",
+        "TIP": "Formulários pendentes são sincronizados apenas manualmente pressionando 'Enviar Agora'."
+    }
+}

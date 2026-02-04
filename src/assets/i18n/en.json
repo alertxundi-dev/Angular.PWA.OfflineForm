@@ -1,0 +1,57 @@
+{
+    "APP": {
+        "TITLE": "PWA Offline Form",
+        "SUBTITLE": "Offline-enabled form",
+        "LANGUAGES": {
+            "ES": "Spanish",
+            "EN": "English",
+            "PT": "Portuguese"
+        }
+    },
+    "connection": {
+        "connected": "Connected",
+        "offline": "Offline mode"
+    },
+    "form": {
+        "fields": {
+            "name": "First Name",
+            "lastname": "Last Name",
+            "email": "Email",
+            "category": "Category",
+            "observations": "Observations"
+        },
+        "placeholders": {
+            "selectCategory": "Select a category"
+        },
+        "categories": {
+            "general": "General",
+            "support": "Support",
+            "sales": "Sales",
+            "feedback": "Feedback"
+        },
+        "errors": {
+            "nameRequired": "First name is required",
+            "lastnameRequired": "Last name is required",
+            "emailInvalid": "Invalid email",
+            "categoryRequired": "Category is required"
+        },
+        "actions": {
+            "submit": "Submit",
+            "submitting": "Sending"
+        },
+        "success": "Form submitted successfully!"
+    },
+    "pendingForms": "Pending forms ({{count}})",
+    "loading": "Loading...",
+    "OFFLINE": {
+        "TITLE": "Pending Forms to Sync",
+        "SUBTITLE": "These forms were saved locally. You can send them manually when you have connection.",
+        "LOADING": "Loading pending forms...",
+        "EMPTY": "No pending forms to synchronize",
+        "SAVED_ON": "Saved on",
+        "OBSERVATIONS_LABEL": "Observations:",
+        "SEND_NOW": "Send Now",
+        "DELETE": "Delete",
+        "TIP": "Pending forms are only synchronized manually by pressing 'Send Now'."
+    }
+}

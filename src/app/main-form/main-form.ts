@@ -6,7 +6,6 @@ import { ApiService } from '../services/api.service';
 import { NetworkService } from '../services/network.service';
 import { PendingFormsIndicator } from "../pending-forms-indicator/pending-forms-indicator";
 import { Loader } from "../loader/loader";
-import { LanguageSelector } from "../language-selector/language-selector";
 import { TranslocoModule } from '@jsverse/transloco';
 
 export interface FormData {
@@ -19,7 +18,7 @@ export interface FormData {
 
 @Component({
   selector: 'pwa-main-form',
-  imports: [ReactiveFormsModule, PendingFormsIndicator, Loader, LanguageSelector, TranslocoModule],
+  imports: [ReactiveFormsModule, PendingFormsIndicator, Loader, TranslocoModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="main-form-container">

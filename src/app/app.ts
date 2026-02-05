@@ -4,7 +4,7 @@ import { MainForm } from "./main-form/main-form";
 import { OfflineData } from "./offline-data/offline-data";
 import { StatusBar } from "./status-bar/status-bar";
 import { UpdateNotification } from "./update-notification/update-notification";
-import { LanguageSelector } from "./language-selector/language-selector";
+import { LanguageSelector } from "./features/i18n/components/language-selector/language-selector";
 import { IndexedDbService } from './services/indexed-db.service';
 
 @Component({

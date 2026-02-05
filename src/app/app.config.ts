@@ -5,9 +5,9 @@ import { provideTransloco, TRANSLOCO_LOADER } from '@jsverse/transloco';
 
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
-import { TranslocoHttpLoader } from './transloco-loader';
-import { AvailableLangs } from './transloco.config';
-import { AvailableLanguages } from './transloco.config';
+import { TranslocoHttpLoader } from './features/i18n/loaders/transloco-loader';
+import { AvailableLangs } from './features/i18n/config/transloco.config';
+import { AvailableLanguages } from './features/i18n/config/transloco.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,5 +26,6 @@ export const appConfig: ApplicationConfig = {
         prodMode: !isDevMode()
       },
       loader: TranslocoHttpLoader
-    })]
+    })
+  ]
 };

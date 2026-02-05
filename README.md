@@ -35,383 +35,110 @@ ng build --configuration production
 
 ## 🌍 Internacionalización con @jsverse/transloco
 
-Esta aplicación utiliza **@jsverse/transloco**, la librería moderna de internacionalización para Angular.
+### Configuración Centralizada
 
-### Instalación
+#### **features/i18n/config/transloco.config.ts**
+```typescript
+export enum AvailableLangs { ES = 'es', EN = 'en', PT = 'pt', FR = 'fr' }
 
-```bash
-npm install @jsverse/transloco @jsverse/transloco-locale
+export const AvailableLanguages = [AvailableLangs.ES, AvailableLangs.EN, AvailableLangs.PT, AvailableLangs.FR];
+
+export const LanguageConfig = {
+  [AvailableLangs.ES]: { name: 'Español', flag: '🇪🇸' },
+  [AvailableLangs.EN]: { name: 'English', flag: '🇬🇧' },
+  [AvailableLangs.PT]: { name: 'Português', flag: '🇵🇹' },
+  [AvailableLangs.FR]: { name: 'Français', flag: '🇫🇷' }
+} as const;
+
+export function getAvailableLanguages() {
+  return AvailableLanguages.map(code => ({
+    code,
+    name: LanguageConfig[code].name,
+    flag: LanguageConfig[code].flag
+  }));
+}
 ```
 
-### Configuración
-
-#### 1. **transloco-loader.ts** - Loader Personalizado
-
+#### **features/i18n/services/language.service.ts** - Estado Reactivo
 ```typescript
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
-import { TranslocoLoader, Translation } from '@jsverse/transloco';
+@Injectable({ providedIn: 'root' })
+export class LanguageService {
+  private _currentLang = signal<string>(this.getInitialLanguage());
+  readonly currentLang = this._currentLang.asReadonly();
 
-@Injectable({
-  providedIn: 'root'
-})
-export class TranslocoHttpLoader implements TranslocoLoader {
-  private readonly http = inject(HttpClient);
+  constructor() {
+    effect(() => localStorage.setItem('preferred-language', this._currentLang()));
+  }
 
-  getTranslation(lang: string) {
-    return this.http.get<Translation>(`/assets/i18n/${lang}.json`);
+  setLanguage(lang: string) {
+    this._currentLang.set(lang);
+    this.translocoService.setActiveLang(lang);
   }
 }
 ```
 
-#### 2. **transloco.config.ts** - Configuración Centralizada
-
+#### **features/i18n/components/language-selector.ts** - UI Component
 ```typescript
-import { TranslocoGlobalConfig } from '@jsverse/transloco-utils';
+@Component({ standalone: true, imports: [FormsModule] })
+export class LanguageSelector {
+  protected currentLangValue = this.languageService.currentLang();
+  protected get languages() { return getAvailableLanguages(); }
 
-export enum AvailableLangs {
-  ES = 'es',
-  EN = 'en',
-  PT = 'pt'
+  onLanguageChange(lang: AvailableLangs) {
+    this.languageService.setLanguage(lang);
+  }
 }
-
-export const AvailableLanguages = [
-  AvailableLangs.ES,
-  AvailableLangs.EN,
-  AvailableLangs.PT
-];
-
-export const config: TranslocoGlobalConfig = {
-  langs: AvailableLanguages,
-  defaultLang: AvailableLangs.ES,
-  rootTranslationsPath: './src/assets/i18n'
-};
-```
-
-#### 3. **app.config.ts** - Configuración de la Aplicación
-
-```typescript
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, isDevMode } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideTransloco, TRANSLOCO_LOADER } from '@jsverse/transloco';
-import { routes } from './app.routes';
-import { provideServiceWorker } from '@angular/service-worker';
-import { TranslocoHttpLoader } from './transloco-loader';
-import { AvailableLangs } from './transloco.config';
-import { AvailableLanguages } from './transloco.config';
-
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
-    provideHttpClient(),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
-    provideTransloco({
-      config: {
-        availableLangs: AvailableLanguages,
-        defaultLang: AvailableLangs.ES,
-        reRenderOnLangChange: true,
-        prodMode: !isDevMode()
-      },
-      loader: TranslocoHttpLoader
-    })]
-};
 ```
 
 ### Estructura de Archivos
 
-```bash
-src/assets/i18n/
-├── es.json    ← Español
-├── en.json    ← Inglés
-└── pt.json    ← Português
+```
+src/app/features/i18n/
+├── services/language.service.ts    ← Estado con signals
+├── config/transloco.config.ts      ← Configuración central
+├── loaders/transloco-loader.ts     ← Carga de traducciones
+└── components/language-selector/    ← UI Component
 ```
 
-### Formato JSON
+### Añadir Nuevo Idioma
 
-```json
-{
-  "APP": {
-    "TITLE": "PWA Formulario Offline",
-    "SUBTITLE": "Formulario con modo offline",
-    "LANGUAGES": {
-      "ES": "Español",
-      "EN": "English",
-      "PT": "Português"
-    }
-  },
-  "connection": {
-    "connected": "Conectado",
-    "offline": "Sin conexión (Modo offline)"
-  },
-  "form": {
-    "fields": {
-      "name": "Nombre",
-      "lastname": "Apellido",
-      "email": "Email",
-      "category": "Categoría",
-      "observations": "Observaciones"
-    },
-    "placeholders": {
-      "selectCategory": "Selecciona una categoría"
-    },
-    "categories": {
-      "general": "General",
-      "support": "Soporte",
-      "sales": "Ventas",
-      "feedback": "Feedback"
-    },
-    "errors": {
-      "nameRequired": "El nombre es obligatorio",
-      "lastnameRequired": "El apellido es obligatorio",
-      "emailInvalid": "Email inválido",
-      "categoryRequired": "La categoría es obligatoria"
-    },
-    "actions": {
-      "submit": "Enviar",
-      "submitting": "Enviando"
-    },
-    "success": "¡Formulario enviado con éxito!"
-  },
-  "pendingForms": "Formularios pendientes ({{count}})",
-  "loading": "Cargando...",
-  "OFFLINE": {
-    "TITLE": "Formularios Pendientes de Sincronización",
-    "SUBTITLE": "Estos formularios se guardaron localmente. Puede enviarlos manualmente cuando tenga conexión.",
-    "LOADING": "Cargando formularios pendentes...",
-    "EMPTY": "No hay formularios pendientes de sincronización",
-    "SAVED_ON": "Guardado el",
-    "OBSERVATIONS_LABEL": "Observaciones:",
-    "SEND_NOW": "Enviar ahora",
-    "DELETE": "Eliminar",
-    "TIP": "Los formularios pendientes solo se sincronizan manualmente al presionar 'Enviar ahora'."
-  }
-}
+1. **Actualizar configuración:**
+```typescript
+// transloco.config.ts
+export enum AvailableLangs { ES = 'es', EN = 'en', PT = 'pt', FR = 'fr', DE = 'de' }
+export const LanguageConfig = { ..., [AvailableLangs.DE]: { name: 'Deutsch', flag: '🇩🇪' } }
 ```
+
+2. **Crear archivo:** `assets/i18n/de.json`
+3. **¡Listo!** - El selector detecta el nuevo idioma automáticamente
 
 ### Uso en Templates
 
-#### Traducción Simple
 ```html
+<!-- Traducción simple -->
 <h1>{{ 'APP.TITLE' | transloco }}</h1>
-<p>{{ 'APP.SUBTITLE' | transloco }}</p>
-```
 
-#### Con Parámetros
-```html
+<!-- Con parámetros -->
 <span>{{ 'pendingForms' | transloco: { count: pendingCount } }}</span>
-```
 
-#### Directivas
-```html
+<!-- Directivas -->
 <div transloco="FORM.TITLE"></div>
-<p transloco>Texto estático traducido</p>
 ```
 
-### Selector de Idioma con ngModel (Implementación Funcional)
+### Arquitectura: Signals + ngModel
 
-#### Componente LanguageSelector
-```typescript
-import { Component, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { TranslocoService } from '@jsverse/transloco';
-import { AvailableLangs, AvailableLanguages } from '../transloco.config';
+**Ventajas del enfoque híbrido:**
+- ✅ **Signals** - Reactividad global centralizada
+- ✅ **ngModel** - Binding robusto sin race conditions  
+- ✅ **Servicio** - Separación de responsabilidades
+- ✅ **Dinámico** - Fácil añadir idiomas
 
-// 🎯 Interfaz que coincide con la configuración del servicio
-export interface Language {
-  code: string;
-  name: string;
-  flag: string;
-}
+| Enfoque | Ventajas | Desventajas |
+|---------|----------|-------------|
+| Solo ngModel | ✅ Sin race conditions | ❌ Sin reactividad |
+| Solo signals | ✅ Reactividad completa | ❌ Race conditions |
+| **Híbrido** | ✅ Lo mejor de ambos | ✅ Solución completa |
 
-@Component({
-  selector: 'pwa-language-selector',
-  imports: [FormsModule],
-  template: `
-    <div class="language-selector">
-      <select [(ngModel)]="selectedLang" (ngModelChange)="onLanguageChange($event)" 
-              class="language-select">
-        @for (lang of languages; track lang.code) {
-          <option [value]="lang.code">
-            {{ lang.flag }} {{ lang.name }}
-          </option>
-        }
-      </select>
-    </div>
-  `,
-  styleUrl: './language-selector.css',
-})
-export class LanguageSelector {
-  protected translocoService = inject(TranslocoService);
-  
-  // 🎯 Propiedad para el binding con ngModel
-  protected selectedLang = this.getInitialLanguage();
-
-  // 🎯 Obtener idioma inicial desde localStorage o por defecto
-  private getInitialLanguage(): string {
-    const savedLang = localStorage.getItem('preferred-language');
-    return savedLang || AvailableLangs.ES;
-  }
-
-  // 🎯 Configuración de idiomas con nombres en su idioma nativo
-  protected get languages(): Language[] {
-    return [
-      { code: AvailableLangs.ES, name: 'Español', flag: '🇪🇸' },
-      { code: AvailableLangs.EN, name: 'English', flag: '🇬🇧' },
-      { code: AvailableLangs.PT, name: 'Português', flag: '🇵🇹' }
-    ];
-  }
-
-  constructor() {
-    // 🎯 Establecer idioma inicial
-    this.translocoService.setActiveLang(this.selectedLang);
-  }
-
-  onLanguageChange(newLang: string): void {
-    // Actualizar nuestra propiedad y el servicio
-    this.selectedLang = newLang;
-    this.translocoService.setActiveLang(newLang);
-    localStorage.setItem('preferred-language', newLang);
-  }
-}
-```
-
-#### ¿Por qué ngModel en lugar de Signals?
-
-**Problema con Signals (no funciona):**
-```typescript
-// ❌ Race condition: el signal se inicializa antes que el constructor
-currentLang = toSignal(
-  this.translocoService.langChanges$,
-  { initialValue: this.translocoService.getActiveLang() }
-);
-// Resultado: El selector muestra el idioma incorrecto al cargar la página
-```
-
-**Solución con ngModel (funciona perfectamente):**
-```typescript
-// ✅ Timing perfecto: propiedad se inicializa antes del renderizado
-selectedLang = this.getInitialLanguage(); // Lee localStorage inmediatamente
-// Resultado: El selector muestra correctamente el idioma guardado
-```
-
-**Ventajas de ngModel para este caso:**
-- ✅ **Sincronización perfecta** - Sin race conditions
-- ✅ **Simplicidad** - Menos código que mantener
-- ✅ **Performance** - Sin overhead de observables
-- ✅ **Mantenimiento** - Código más legible para equipos pequeños
-
-### Características Avanzadas
-
-#### Template-Driven Forms (ngModel)
-- **Binding bidireccional** simple y eficiente
-- **Sincronización perfecta** con localStorage
-- **Sin race conditions** en la inicialización
-- **Performance óptima** para casos simples
-
-#### Lazy Loading
-- Carga idiomas bajo demanda
-- Solo descarga el idioma necesario
-- Cache inteligente automático
-
-#### Type Safety
-- Soporte completo de TypeScript
-- Autocompletado de claves
-- Validación en tiempo de compilación
-
-#### Interpolación
-- Soporte para parámetros: `{{count}}`
-- Pluralización automática
-- Formato de fechas y números
-
-#### Template-Driven vs Reactive Forms
-- **ngModel**: Simple para casos como selectores de idioma
-- **FormControl**: Poderoso para formularios complejos
-- **Elección correcta**: ngModel para este proyecto
-
-### Arquitectura del Selector: ngModel vs Signals
-
-#### Flujo de Datos (ngModel - Funciona):
-```
-localStorage ──► getInitialLanguage() ──► selectedLang ──► [(ngModel)] ──► <select>
-     'en'              'en'               'en'           binding          value="en"
-```
-
-#### Jerarquía de Soluciones para Selectores:
-1. **ngModel** (🥇 Perfecto para este caso) - Simple, sin race conditions
-2. **FormControl** (🥈 Viable pero excesivo) - Más boilerplate
-3. **Signals** (🥉 Problemático) - Race conditions en inicialización
-
-### Comparación: @ngx-translate vs @jsverse/transloco
-
-| Característica | @ngx-translate | @jsverse/transloco |
-|---------------|----------------|-------------------|
-| **Signals** | ❌ No nativo | ✅ Soporte completo |
-| **Performance** | Buena | ✅ Excelente |
-| **Angular 21+** | Legacy | ✅ Moderno |
-| **Type Safety** | Parcial | ✅ Completo |
-| **Bundle Size** | ~15KB | ✅ ~8KB |
-| **Mantenimiento** | Activo | ✅ Muy activo |
-
-### ¿Por qué @jsverse/transloco?
-
-#### Ventajas
-- **Signals First** - Diseñado para Angular moderno
-- **Performance Superior** - Optimizado para Zoneless
-- **Type Safety Completo** - Inferencia perfecta
-- **Modern Architecture** - Compatible con Angular 21+
-- **Active Development** - Actualizaciones constantes
-
-#### Para este Proyecto
-- **PWA Moderna** - Compatible con nuestro stack
-- **Reactividad Signals** - Integración perfecta
-- **Performance** - Ideal para aplicaciones offline
-- **Future-Proof** - Dirección de Angular
-
-### Mejores Prácticas con ngModel
-
-#### 1. Inicialización Correcta
-```typescript
-// ✅ Forma correcta - funciona perfectamente
-selectedLang = this.getInitialLanguage(); // Lee localStorage antes del renderizado
-
-// ❌ Forma incorrecta - race condition
-currentLang = toSignal(this.translocoService.langChanges$); // Muestra idioma incorrecto
-```
-
-#### 2. Nombres de Idioma en Idioma Nativo
-```typescript
-// ✅ Siempre mostrar en su idioma
-{ code: AvailableLangs.ES, name: 'Español', flag: '🇪🇸' }
-{ code: AvailableLangs.EN, name: 'English', flag: '🇬🇧' }
-{ code: AvailableLangs.PT, name: 'Português', flag: '🇵🇹' }
-```
-
-#### 3. Binding Bidireccional
-```html
-<!-- ✅ Template con ngModel - funciona perfectamente -->
-<select [(ngModel)]="selectedLang" (ngModelChange)="onLanguageChange($event)">
-  <option [value]="lang.code">{{ lang.flag }} {{ lang.name }}</option>
-</select>
-```
-
-### Conclusión
-
-**@jsverse/transloco + ngModel** proporciona:
-
-- **Solución funcional** para selectores de idioma
-- **Performance superior** para PWAs
-- **Type safety completo** 
-- **Integración perfecta** con Angular 21+
-- **Experiencia de usuario** excepcional
-
-**Resultado:** Sistema multiidioma simple, funcional y optimizado para PWAs.
-
-**Lección aprendida:** Para casos simples como selectores de idioma, ngModel es superior a signals porque elimina las race conditions de inicialización.
 
 ---
 

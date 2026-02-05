@@ -35,6 +35,98 @@ ng build --configuration production
 
 ## 🌍 Internacionalización con @jsverse/transloco
 
+### Configuración Offline-First
+
+Para que las traducciones funcionen correctamente en modo offline, es necesario configurar dos archivos clave:
+
+#### 1. **ngsw-config.json** - Service Worker Cache
+```json
+{
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ]
+      }
+    },
+    {
+      "name": "i18n",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/i18n/*.json"
+        ]
+      }
+    }
+  ]
+}
+```
+
+**Configuración clave**:
+- `"installMode": "prefetch"`: Cachea todos los archivos JSON al instalar la PWA
+- `"updateMode": "prefetch"`: Busca actualizaciones en segundo plano
+- `"files": ["/assets/i18n/*.json"]`: Específico para archivos de traducción
+
+#### 2. **src/app/features/i18n/loaders/transloco-loader.ts** - Loader Simple
+```typescript
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { TranslocoLoader, Translation } from '@jsverse/transloco';
+import { catchError, of } from 'rxjs';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class TranslocoHttpLoader implements TranslocoLoader {
+    private readonly http = inject(HttpClient);
+
+    getTranslation(lang: string) {
+        return this.http.get<Translation>(`/assets/i18n/${lang}.json`).pipe(
+            catchError((error) => {
+                console.warn(`Failed to load translation for language: ${lang}`, error);
+                return of({});
+            })
+        );
+    }
+}
+```
+
+**Características**:
+- **Simple**: Solo 15 líneas de código
+- **Robusto**: `catchError` evita que la app crashee
+- **Offline-first**: El Service Worker maneja todo el cacheo
+
+### Flujo Offline Completo
+
+1. **Primera visita online**:
+   - Service Worker cachea `es.json`, `en.json`, `pt.json`
+   - Todos los idiomas disponibles inmediatamente
+
+2. **Modo offline**:
+   - Service Worker sirve traducciones desde cache
+   - Cambio de idioma funciona perfectamente
+
+3. **Actualizaciones**:
+   - Service Worker busca nuevas versiones automáticamente
+   - Se actualizan en segundo plano sin interrumpir
+
 ### Configuración Centralizada
 
 #### **features/i18n/config/transloco.config.ts**
